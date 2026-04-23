@@ -377,3 +377,313 @@ tbody tr:hover {
   padding: 0;
   margin: 0;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   LAYOUT — Header
+───────────────────────────────────────────────────────────── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  background: rgba(11, 12, 16, 0.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  gap: 0.75rem;
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.header-search {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 360px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.45rem 0.85rem;
+  transition: border-color var(--transition);
+}
+
+.header-search:focus-within {
+  border-color: var(--accent);
+}
+
+.search-input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 0.85rem;
+  width: 100%;
+  font-family: var(--font-sans);
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.edition-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--accent-bg);
+  color: var(--accent);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LAYOUT — Body grid (3-column desktop default)
+───────────────────────────────────────────────────────────── */
+.site-body {
+  display: grid;
+  grid-template-columns: 260px 1fr 260px;
+  grid-template-rows: 1fr;
+  min-height: calc(100dvh - 60px);
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LAYOUT — Left Sidebar
+───────────────────────────────────────────────────────────── */
+.site-sidebar {
+  position: sticky;
+  top: 60px;
+  height: calc(100dvh - 60px);
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 0;
+  scrollbar-width: thin;
+}
+
+/* Mobile search inside sidebar (hidden on desktop) */
+.sidebar-search-mobile {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.45rem 0.85rem;
+  margin: 0 1rem 1rem;
+}
+
+.sidebar-search-mobile:focus-within {
+  border-color: var(--accent);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LAYOUT — Main content
+───────────────────────────────────────────────────────────── */
+.site-main {
+  min-width: 0;
+  padding: 2.5rem clamp(1.25rem, 4vw, 3.5rem) 6rem;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LAYOUT — Right TOC
+───────────────────────────────────────────────────────────── */
+.site-toc {
+  position: sticky;
+  top: 60px;
+  height: calc(100dvh - 60px);
+  overflow-y: auto;
+  border-left: 1px solid var(--border);
+  padding: 1.5rem 1.25rem;
+  scrollbar-width: thin;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LAYOUT — Mobile hamburger button (hidden on desktop)
+───────────────────────────────────────────────────────────── */
+.mobile-menu-btn {
+  display: none;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), color var(--transition);
+  padding: 0;
+}
+
+.mobile-menu-btn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LAYOUT — Sidebar backdrop overlay (mobile)
+───────────────────────────────────────────────────────────── */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 149;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  animation: fadeIn 180ms ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BREAKPOINT — Tablet (≤ 1100px): hide right TOC column
+───────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .site-body {
+    grid-template-columns: 240px 1fr;
+  }
+
+  .site-toc {
+    display: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BREAKPOINT — Mobile (≤ 768px): slide-in sidebar overlay
+───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Show hamburger */
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  /* Show backdrop when sidebar is open */
+  .sidebar-backdrop {
+    display: block;
+  }
+
+  /* Header: hide desktop search, show only logo + hamburger + badge */
+  .header-search {
+    display: none;
+  }
+
+  /* Logo text: truncate on very small screens */
+  .logo-text {
+    display: none;
+  }
+
+  /* Edition badge: keep visible */
+  .edition-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+  }
+
+  /* Body: single column */
+  .site-body {
+    grid-template-columns: 1fr;
+  }
+
+  /* Sidebar: fixed overlay, slides in from left */
+  .site-sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    height: calc(100dvh - 60px);
+    width: min(300px, 85vw);
+    z-index: 150;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    transform: translateX(-100%);
+    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    padding-top: 1rem;
+  }
+
+  .site-sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Show the in-sidebar search on mobile */
+  .sidebar-search-mobile {
+    display: flex;
+  }
+
+  /* Main: full-width, tighter padding */
+  .site-main {
+    padding: 1.75rem 1.25rem 5rem;
+  }
+
+  /* TOC already hidden via 1100px breakpoint */
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BREAKPOINT — Small phones (≤ 480px)
+───────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .site-main {
+    padding: 1.25rem 1rem 4rem;
+  }
+
+  .edition-badge {
+    display: none;
+  }
+
+  /* Tables: allow horizontal scroll nicely */
+  .table-wrap {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  /* Cost grid: single column */
+  .cost-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Phase header: stack vertically */
+  .phase-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Nav pagination (prev/next) links */
+  .site-main [style*="justifyContent: 'space-between'"],
+  .site-main [style*="justify-content: space-between"] {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   UTILITY — Prevent body scroll when sidebar is open on mobile
+───────────────────────────────────────────────────────────── */
+body.sidebar-open-lock {
+  overflow: hidden;
+}

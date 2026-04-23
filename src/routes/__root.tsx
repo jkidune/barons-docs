@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute, Outlet } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { Link, useRouterState } from '@tanstack/react-router'
 import appCss from '../styles.css?url'
 import { useState, useEffect } from 'react'
@@ -64,6 +64,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     setSidebarOpen(false)
   }, [currentPath])
 
+  // Body scroll-lock when sidebar is open on mobile
+  useEffect(() => {
+    document.body.classList.toggle('sidebar-open-lock', sidebarOpen)
+    return () => document.body.classList.remove('sidebar-open-lock')
+  }, [sidebarOpen])
+
   const filteredNav = NAV.map((section) => ({
     ...section,
     links: section.links.filter((l) =>
@@ -78,55 +84,43 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body style={{ margin: 0, background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--font-sans)' }}>
 
+        {/* ── MOBILE SIDEBAR OVERLAY ── */}
+        {sidebarOpen && (
+          <div
+            className="sidebar-backdrop"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* ── TOP NAV ── */}
-        <header style={{
-          position: 'sticky', top: 0, zIndex: 100,
-          height: '60px',
-          display: 'flex', alignItems: 'center',
-          padding: '0 1.5rem',
-          background: 'rgba(11,12,16,0.92)',
-          borderBottom: '1px solid var(--border)',
-          backdropFilter: 'blur(12px)',
-          gap: '1rem',
-        }}>
+        <header className="site-header">
           {/* Mobile menu button */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            style={{
-              display: 'none',
-              width: 36, height: 36,
-              border: '1px solid var(--border)',
-              background: 'none',
-              borderRadius: 8,
-              color: 'var(--muted)',
-              cursor: 'pointer',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
             className="mobile-menu-btn"
-            aria-label="Toggle menu"
+            aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={sidebarOpen}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
+            {sidebarOpen ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
           </button>
 
           {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontWeight: 600, fontSize: '0.95rem', color: 'var(--text)', flexShrink: 0 }}>
+          <div className="site-logo">
             <img src="/barons-white-icon.svg" alt="Barons Digital" style={{ width: 28, height: 28 }} />
-            Barons Digital Docs
+            <span className="logo-text">Barons Digital Docs</span>
           </div>
 
           {/* Search */}
-          <div style={{
-            position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-            width: '360px',
-            display: 'flex', alignItems: 'center', gap: '0.5rem',
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: '10px',
-            padding: '0.45rem 0.85rem',
-          }}>
+          <div className="header-search">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
@@ -134,38 +128,34 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search docs…"
-              style={{
-                background: 'none', border: 'none', outline: 'none',
-                color: 'var(--text)', fontSize: '0.85rem', width: '100%',
-                fontFamily: 'var(--font-sans)',
-              }}
+              className="search-input"
             />
           </div>
 
           {/* Right — Edition badge */}
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{
-              fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              background: 'var(--accent-bg)',
-              color: 'var(--accent)',
-              padding: '0.2rem 0.6rem',
-              borderRadius: 999,
-            }}>Edition 1.0</span>
+          <div className="header-right">
+            <span className="edition-badge">Edition 1.0</span>
           </div>
         </header>
 
         {/* ── BODY GRID ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr 260px', minHeight: 'calc(100dvh - 60px)', maxWidth: '1440px', margin: '0 auto' }}>
+        <div className="site-body">
 
           {/* ── LEFT SIDEBAR ── */}
-          <aside style={{
-            position: 'sticky', top: '60px',
-            height: 'calc(100dvh - 60px)',
-            overflowY: 'auto',
-            borderRight: '1px solid var(--border)',
-            padding: '1.5rem 0',
-          }}>
+          <aside className={`site-sidebar${sidebarOpen ? ' sidebar-open' : ''}`}>
+            {/* Mobile search inside sidebar */}
+            <div className="sidebar-search-mobile">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search docs…"
+                className="search-input"
+              />
+            </div>
+
             {filteredNav.map((section) => (
               <div key={section.label} style={{ marginBottom: '1.5rem' }}>
                 <div style={{
@@ -183,7 +173,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                       to={link.to}
                       style={{
                         display: 'block',
-                        padding: '0.35rem 1.25rem',
+                        padding: '0.45rem 1.25rem',
                         fontSize: '0.875rem',
                         color: isActive ? 'var(--accent)' : 'var(--muted)',
                         fontWeight: isActive ? 600 : 400,
@@ -202,20 +192,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           </aside>
 
           {/* ── MAIN CONTENT ── */}
-          <main style={{ minWidth: 0, padding: '2.5rem clamp(1.5rem, 4vw, 3.5rem) 6rem' }}>
+          <main className="site-main">
             <div style={{ maxWidth: '720px' }}>
               {children}
             </div>
           </main>
 
           {/* ── RIGHT TOC (populated per page via context) ── */}
-          <aside style={{
-            position: 'sticky', top: '60px',
-            height: 'calc(100dvh - 60px)',
-            overflowY: 'auto',
-            borderLeft: '1px solid var(--border)',
-            padding: '1.5rem 1.25rem',
-          }}>
+          <aside className="site-toc">
             <div id="toc-portal" />
           </aside>
         </div>
